@@ -32,6 +32,7 @@ RUN uv pip install mcpo && rm -rf ~/.cache
 WORKDIR /app/brave-search-mcp
 RUN git clone https://github.com/mikechao/brave-search-mcp.git . \
     && npm install \
+    && npm run build \
     && npm ci --ignore-scripts --omit-dev
 
 # Set NODE_ENV to production for optimal runtime performance
