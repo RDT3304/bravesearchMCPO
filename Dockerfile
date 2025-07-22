@@ -39,7 +39,7 @@ WORKDIR /mcp_server_src
 RUN npm install
 
 # Build the TypeScript code (outputs to dist/ directory)
-RUN npm run build
+RUN npm run build # <-- This command creates the 'dist' directory!
 
 # --- Final Configuration ---
 # Set the primary working directory back to /app for mcpo execution
