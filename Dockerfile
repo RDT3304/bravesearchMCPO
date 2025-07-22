@@ -46,7 +46,7 @@ RUN npm run build # <-- This command creates the 'dist' directory!
 WORKDIR /app
 
 # Expose the port mcpo will listen on (default 8000)
-EXPOSE 8000
+EXPOSE 8001
 
 # Set default API keys and port for mcpo and Brave Search MCP.
 # IMPORTANT: These should be overridden with strong, unique keys
