@@ -8,6 +8,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /usr/local/bin/
 
 # Install base dependencies (git, curl, ca-certificates)
+# These are commonly needed for cloning repositories or fetching other dependencies.
 RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     curl \
@@ -21,14 +22,15 @@ RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
     && rm -rf /var/lib/apt/lists/*
 
 # --- MCPO Python Virtual Environment Setup ---
+# This section sets up the Python environment where mcpo will be installed.
 WORKDIR /app
 ENV VIRTUAL_ENV=/app/.venv
 RUN uv venv "$VIRTUAL_ENV"
-ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+ENV PATH="$VIRTUAL_ENV/bin:$PATH" 
 RUN uv pip install mcpo && rm -rf ~/.cache
 
-# --- Specific MCP Server Source & Build Steps (Brave Search MCP Server) ---
-# Clone the Brave Search MCP Server repository
+# --- Brave Search MCP Server Source Code & Build Steps ---
+# Clone the Brave Search MCP Server repository and build it
 WORKDIR /app/brave-search-mcp
 RUN git clone https://github.com/mikechao/brave-search-mcp.git . \
     && npm install \
@@ -42,12 +44,15 @@ ENV NODE_ENV=production
 # Set the primary working directory back to /app for mcpo execution
 WORKDIR /app
 
-# Expose the port mcpo will listen on (changed to 8001)
+# Expose the port mcpo will listen on (port 8001).
+# Ensure your deployment environment (e.g., Coolify) exposes this port.
 EXPOSE 8001
 
 # Set a default API key and port for mcpo.
-# IMPORTANT: Change "your-secret-mcpo-api-key" to a strong, unique key
-# in your deployment environment (e.g., Coolify, Kubernetes secrets, .env file).
+# IMPORTANT: Change "your-secret-mcpo-api-key" to a strong, unique key.
+# This should ideally be managed as a secret or environment variable
+# in your deployment platform (e.g., Coolify, Kubernetes secrets, .env file)
+# and NOT committed directly to a public repository.
 ENV MCPO_API_KEY="your-secret-mcpo-api-key"
 ENV MCPO_PORT=8001
 
@@ -58,6 +63,7 @@ ENV MCPO_PORT=8001
 ENV BRAVE_API_KEY="your-brave-search-api-key"
 
 # Command to run mcpo, passing the Brave Search MCP Server's stdio command.
-# This launches 'node brave-search-mcp/dist/index.js' as a child process
+# This is the crucial part that launches your MCP server and connects it to mcpo.
+# The command launches 'node brave-search-mcp/dist/index.js' as a child process
 # and proxies its standard I/O to an HTTP/OpenAPI endpoint.
 CMD mcpo --port ${MCPO_PORT} --api-key ${MCPO_API_KEY} -- node brave-search-mcp/dist/index.js
