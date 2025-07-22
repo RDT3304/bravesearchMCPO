@@ -52,7 +52,7 @@ EXPOSE 8000
 # IMPORTANT: These should be overridden with strong, unique keys
 # in your deployment environment (e.g., Coolify, Kubernetes secrets, .env file).
 ENV MCPO_API_KEY="your-secret-mcpo-api-key"
-ENV MCPO_PORT=8001
+ENV MCPO_PORT=8000
 ENV BRAVE_API_KEY="your-brave-search-api-key" # <--- YOU MUST SET THIS IN COOLIFY!
 
 # Command to run mcpo, passing the Brave Search MCP's stdio command.
